@@ -2,9 +2,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: app-config
-  namespace: dev
+  namespace: preprod
 data:
   DB_HOST: "postgres-service"
   DB_PORT: "5432"
   DB_NAME: "appdb"
   PORT: "5000"
+  DB_WRITE_URL: "postgres://postgres:password@postgres-service:5432/appdb"
+  DB_READ_URL: "postgres://postgres:password@postgres-service:5432/appdb"
+  # Task 5 Platform Services URLs
+  REDIS_URL: "redis://redis-service:6379"
+  RABBITMQ_URL: "amqp://rabbitmq-service:5672"
+  SEARCH_URL: "http://search-service:9200"

@@ -98,5 +98,7 @@ jobs:
           
           kubectl create namespace $TARGET_NS --dry-run=client -o yaml | kubectl apply --validate=false -f -
           
+          kubectl apply -f k8s/ -n $TARGET_NS --validate=false
+          
           kubectl set image deployment/backend-deployment backend=${{ secrets.REGISTRY_USER }}/node-backend:${{ steps.set-env.outputs.SAFE_BRANCH }}-${{ steps.set-env.outputs.sha_short }} -n $TARGET_NS --validate=false || true
           kubectl set image deployment/frontend-deployment frontend=${{ secrets.REGISTRY_USER }}/react-frontend:${{ steps.set-env.outputs.SAFE_BRANCH }}-${{ steps.set-env.outputs.sha_short }} -n $TARGET_NS --validate=false || true

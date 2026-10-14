@@ -44,6 +44,9 @@ jobs:
           BRANCH_NAME="${{ github.ref_name }}"
           echo "Branch: $BRANCH_NAME"
           
+          SAFE_BRANCH_NAME=$(echo "$BRANCH_NAME" | tr '/' '-')
+          echo "SAFE_BRANCH=$SAFE_BRANCH_NAME" >> $GITHUB_OUTPUT
+          
           if [ "$BRANCH_NAME" = "master" ]; then
             echo "NAMESPACE=dev" >> $GITHUB_OUTPUT
           elif [[ "$BRANCH_NAME" =~ ^pre-release/v ]]; then
@@ -69,7 +72,7 @@ jobs:
           file: ./Dockerfile.backend
           push: true
           tags: |
-            ${{ secrets.REGISTRY_USER }}/node-backend:${{ github.ref_name }}-${{ steps.set-env.outputs.sha_short }}
+            ${{ secrets.REGISTRY_USER }}/node-backend:${{ steps.set-env.outputs.SAFE_BRANCH }}-${{ steps.set-env.outputs.sha_short }}
             ${{ secrets.REGISTRY_USER }}/node-backend:latest
 
       - name: Build & Push Frontend
@@ -79,7 +82,7 @@ jobs:
           file: ./Dockerfile.frontend
           push: true
           tags: |
-            ${{ secrets.REGISTRY_USER }}/react-frontend:${{ github.ref_name }}-${{ steps.set-env.outputs.sha_short }}
+            ${{ secrets.REGISTRY_USER }}/react-frontend:${{ steps.set-env.outputs.SAFE_BRANCH }}-${{ steps.set-env.outputs.sha_short }}
             ${{ secrets.REGISTRY_USER }}/react-frontend:latest
 
       - name: Set up Kubeconfig
@@ -95,5 +98,5 @@ jobs:
           
           kubectl create namespace $TARGET_NS --dry-run=client -o yaml | kubectl apply --validate=false -f -
           
-          kubectl set image deployment/backend-deployment backend=${{ secrets.REGISTRY_USER }}/node-backend:${{ github.ref_name }}-${{ steps.set-env.outputs.sha_short }} -n $TARGET_NS --validate=false || true
-          kubectl set image deployment/frontend-deployment frontend=${{ secrets.REGISTRY_USER }}/react-frontend:${{ github.ref_name }}-${{ steps.set-env.outputs.sha_short }} -n $TARGET_NS --validate=false || true
+          kubectl set image deployment/backend-deployment backend=${{ secrets.REGISTRY_USER }}/node-backend:${{ steps.set-env.outputs.SAFE_BRANCH }}-${{ steps.set-env.outputs.sha_short }} -n $TARGET_NS --validate=false || true
+          kubectl set image deployment/frontend-deployment frontend=${{ secrets.REGISTRY_USER }}/react-frontend:${{ steps.set-env.outputs.SAFE_BRANCH }}-${{ steps.set-env.outputs.sha_short }} -n $TARGET_NS --validate=false || true

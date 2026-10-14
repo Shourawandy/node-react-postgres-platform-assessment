@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: node-react.local
+    - host: preprod.node-react.local
       http:
         paths:
           - path: /api(/|$)(.*)

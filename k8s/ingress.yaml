@@ -4,10 +4,12 @@ metadata:
   name: app-ingress
   namespace: dev
   annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
+  ingressClassName: nginx
   rules:
-    - host: local-platform.local
+    - host: node-react.local
       http:
         paths:
           - path: /api(/|$)(.*)
